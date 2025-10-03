@@ -2,5 +2,11 @@ export interface User {
   id: number;
   name: string;
   email: string;
-  role: 'INTERN' | 'ENGINEER' | 'ADMIN';
+  role: UserRole | string;
+}
+
+export enum UserRole {
+  INTERN = 'INTERN',
+  ENGINEER = 'ENGINEER',
+  ADMIN = 'ADMIN',
 }
