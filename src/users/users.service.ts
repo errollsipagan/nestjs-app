@@ -1,5 +1,11 @@
-import { Injectable } from '@nestjs/common';
-import { User } from 'src/types';
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { isEnum } from 'class-validator';
+import { User, UserRole } from 'src/types';
 
 @Injectable()
 export class UsersService {
@@ -36,13 +42,24 @@ export class UsersService {
     },
   ];
   getAll(role?: string) {
+    if (!isEnum(role, UserRole)) {
+      throw new BadRequestException('Invalid role ' + role);
+    }
     if (role) {
-      return this.users.filter((user) => user.role === role);
+      const users = this.users.filter((user) => user.role === role);
+      if (!users.length) {
+        throw new NotFoundException('No users found with role ' + role);
+      }
+      return users;
     }
     return this.users;
   }
   getById(id: number) {
-    return this.users.find((user) => user.id === id);
+    const user = this.users.find((user) => user.id === id);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    return user;
   }
   getIndex(id: number) {
     return this.users.findIndex((user) => user.id === id);
@@ -54,7 +71,7 @@ export class UsersService {
     return newUser;
   }
   update(id: number, user: Partial<User>) {
-    const old = this.getById(id)!;
+    const old = this.getById(id);
     const index = this.getIndex(id);
     const updated = {
       ...old,

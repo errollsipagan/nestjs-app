@@ -19,7 +19,7 @@ import UpdateUserDto from './dto/update-user.dto';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
   @Get() //users?role
-  getAll(@Query('role', ValidationPipe) role?: UserRole) {
+  getAll(@Query('role') role?: UserRole) {
     return this.usersService.getAll(role);
   }
   @Get(':id') //users/:id
